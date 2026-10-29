@@ -689,44 +689,55 @@
       return set;
     }
 
-    // Breadth-first search over grid cells (4-connected) around the obstacles.
-    // Returns the cell centers along the shortest route, or null if there is none.
-    function route(from, to, blocked) {
-      const start = cell(from.x, from.y), end = cell(to.x, to.y), prev = new Map([[start, -1]]), queue = [start];
-      while (queue.length) {
-        const k = queue.shift();
-        if (k === end) break;
-        const x = k % N, y = Math.floor(k / N);
-        DIRS.forEach(([dx, dy]) => {
-          const nx = x + dx, ny = y + dy, nk = ny * N + nx;
-          if (nx < 0 || ny < 0 || nx >= N || ny >= M || blocked.has(nk) || prev.has(nk)) return;
-          prev.set(nk, k);
-          queue.push(nk);
-        });
-      }
-      if (!prev.has(end)) return null;
-      const cells = [];
-      for (let k = end; k !== -1; k = prev.get(k)) cells.unshift({ x: k % N + 0.5, y: Math.floor(k / N) + 0.5 });
-      return cells;
+    // Time to turn in place from heading i to heading j (indices into DIRS), as turn() takes
+    function turnTime(i, j) {
+      if (i === j) return 0;
+      const d = Math.acos(Math.max(-1, Math.min(1, DIRS[i][0] * DIRS[j][0] + DIRS[i][1] * DIRS[j][1])));
+      return 200 + d * 200;
     }
+    const straight = (p, q, r) => Math.abs((p.x - q.x) * (r.y - q.y) - (p.y - q.y) * (r.x - q.x)) < 1e-6;
 
-    // Plan how to reach a target cell: try parking on each free side of it, keep the shortest
-    // route, and face the target from there. Straight runs of the route are merged into one leg.
+    // Plan how to reach a target cell: the quickest drive, counting turns as well as distance,
+    // to a free side of it, facing the target from there. Searched over (cell, heading) states
+    // so that among equally short routes the one with the fewest turns wins. Returns the
+    // corners of the route (from where the robot stands, not its cell's center) ending at the
+    // stop in front of the target, or null if the target cannot be reached.
     function plan(from, target, blocked) {
-      let best = null;
-      DIRS.forEach(([dx, dy]) => {
-        const side = { x: Math.floor(target.x) - dx + 0.5, y: Math.floor(target.y) - dy + 0.5 };
-        if (side.x < 0 || side.y < 0 || side.x > N || side.y > M || blocked.has(cell(side.x, side.y))) return;
-        const cells = route(from, side, blocked);
-        if (cells && (!best || cells.length < best.cells.length)) {
-          best = { cells, th: Math.atan2(dy, dx), stop: { x: target.x - dx * STOP, y: target.y - dy * STOP } };
+      const S = N * M * 4, cost = new Array(S).fill(Infinity), prev = new Array(S).fill(-1), done = new Array(S).fill(false);
+      const start = cell(from.x, from.y);
+      // Without a heading (planning ahead, in feasible()) the robot may start facing any way
+      const h0 = from.th === undefined ? -1 : DIRS.findIndex(([dx, dy]) => Math.cos(from.th) * dx + Math.sin(from.th) * dy > 0.99);
+      for (let h = 0; h < 4; h++) cost[start * 4 + h] = h0 < 0 ? 0 : turnTime(h0, h);
+      for (;;) {
+        let k = -1;
+        for (let i = 0; i < S; i++) if (!done[i] && cost[i] < Infinity && (k < 0 || cost[i] < cost[k])) k = i;
+        if (k < 0) break;
+        done[k] = true;
+        const c = k >> 2, h = k & 3;
+        for (let j = 0; j < 4; j++) {
+          const w = cost[k] + turnTime(h, j);
+          if (w < cost[c * 4 + j]) { cost[c * 4 + j] = w; prev[c * 4 + j] = k; }
         }
-      });
-      if (best) {
-        const c = best.cells;
-        best.cells = c.filter((p, i) => !c[i - 1] || !c[i + 1] ||
-          (c[i - 1].x - p.x) * (c[i + 1].y - p.y) !== (c[i - 1].y - p.y) * (c[i + 1].x - p.x));
+        // Drive one cell ahead
+        const nx = c % N + DIRS[h][0], ny = Math.floor(c / N) + DIRS[h][1], n = (ny * N + nx) * 4 + h;
+        if (nx < 0 || ny < 0 || nx >= N || ny >= M || blocked.has(ny * N + nx)) continue;
+        if (cost[k] + 1000 / SPEED < cost[n]) { cost[n] = cost[k] + 1000 / SPEED; prev[n] = k; }
       }
+      let end = -1, best = null;
+      DIRS.forEach(([dx, dy], h) => {
+        const sx = Math.floor(target.x) - dx, sy = Math.floor(target.y) - dy, k = (sy * N + sx) * 4 + h;
+        if (sx < 0 || sy < 0 || sx >= N || sy >= M || cost[k] === Infinity || (end >= 0 && cost[k] >= cost[end])) return;
+        end = k;
+        best = { th: Math.atan2(dy, dx), stop: { x: target.x - dx * STOP, y: target.y - dy * STOP } };
+      });
+      if (!best) return null;
+      const pts = [best.stop];
+      for (let k = end; k !== -1; k = prev[k]) {
+        const c = k >> 2, p = { x: c % N + 0.5, y: Math.floor(c / N) + 0.5 };
+        if (pts[0].x !== p.x || pts[0].y !== p.y) pts.unshift(p);
+      }
+      // Keep only the corners; the first point (the robot's own cell) is where it already is
+      best.route = pts.filter((p, i) => i > 0 && (i === pts.length - 1 || !straight(pts[i - 1], p, pts[i + 1])));
       return best;
     }
 
@@ -822,7 +833,7 @@
     async function visit(target, id) {
       const best = plan(robot, target, obstacles(robot.holding));
       const th = best ? best.th : 0, stop = best ? best.stop : { x: target.x - STOP, y: target.y };
-      path = best ? [...best.cells, stop] : [{ x: robot.x, y: stop.y }, stop];
+      path = best ? best.route : [{ x: robot.x, y: stop.y }, stop];
       while (path.length) {
         const p = { x: robot.x, y: robot.y }, q = path[0];
         const d = Math.hypot(q.x - p.x, q.y - p.y);
