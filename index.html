@@ -149,8 +149,11 @@
 
     /* People */
     .people { display: grid; gap: 2rem 1.25rem; margin: 0; padding: 0; list-style: none; }
-    .people-speakers { grid-template-columns: repeat(2, minmax(0, 1fr)); --avatar: 8.5rem; }
-    @media (min-width: 40rem) { .people-speakers { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    /* Rows are centered so a short last row does not hang off to the left */
+    .people-speakers { display: flex; flex-wrap: wrap; justify-content: center; --avatar: 8.5rem; }
+    .people-speakers > li { width: calc(50% - 0.625rem); }
+    @media (min-width: 40rem) { .people-speakers > li { width: calc((100% - 2.5rem) / 3); } }
+    @media (min-width: 64rem) { .people-speakers > li { width: calc((100% - 3.75rem) / 4); } }
     .people-organizers { display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5rem 2.75rem; --avatar: 6.5rem; }
     .people-organizers > li { width: calc(50% - 1.375rem); }
     @media (min-width: 30rem) { .people-organizers > li { width: 8.5rem; } }
@@ -165,6 +168,8 @@
     .person:hover .person-name { color: var(--violet); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.18em; }
     .person-aff { margin-top: 0.15rem; color: var(--slate); font-size: 0.9375rem; line-height: 1.35; }
     .people-organizers .person-aff { font-size: 0.875rem; }
+    .person-role { margin-top: 0.3rem; padding: 0.05rem 0.5rem; border-radius: 999px; background: var(--tag-bg); color: var(--tag-ink); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    .person-role + .person-aff { margin-top: 0.3rem; }
 
     /* Schedule */
     .schedule { width: 100%; border-collapse: collapse; font-size: 1rem; font-variant-numeric: tabular-nums; }
@@ -188,6 +193,8 @@
       .slot-main, .slot-sub { display: inline; }
       .slot-sub::before { content: "·"; margin-inline: 0.5em; }
     }
+    /* Talk title, on its own line under the speaker */
+    .slot-topic { display: block; margin-top: 0.3rem; color: var(--ink); font-size: 0.875rem; line-height: 1.35; }
     .is-break .slot-main { color: var(--slate); font-weight: 400; }
     @media (max-width: 30rem) {
       .schedule td { padding-inline: 0.5rem; }
@@ -312,6 +319,11 @@
         <span class="person-name">Zhengyi Luo</span>
         <span class="person-aff">NVIDIA</span>
       </a></li>
+      <li><a class="person" href="https://lucacarlone.mit.edu/">
+        <img class="person-photo" src="./static/images/people/luca.jpg" alt="" width="400" height="400" loading="lazy" data-initials="LC">
+        <span class="person-name">Luca Carlone</span>
+        <span class="person-aff">MIT</span>
+      </a></li>
       <li><a class="person" href="https://lauramsmith.github.io/">
         <img class="person-photo" src="./static/images/people/laura.jpg" alt="" width="400" height="400" loading="lazy" data-initials="LS">
         <span class="person-name">Laura Smith</span>
@@ -343,11 +355,11 @@
         </tr>
         <tr>
           <td>08:40–09:15</td>
-          <td><a class="slot slot-link" href="https://ericyi.github.io/"><img class="slot-photo" src="./static/images/people/liyi.jpg" alt="" loading="lazy" data-initials="LY"><span><span class="slot-main">Li Yi</span><span class="slot-sub">Tsinghua University</span></span> <span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">Humanoid Loco-manipulation</span></a></td>
+          <td><a class="slot slot-link" href="https://ericyi.github.io/"><img class="slot-photo" src="./static/images/people/liyi.jpg" alt="" loading="lazy" data-initials="LY"><span><span class="slot-main">Li Yi</span><span class="slot-sub">Tsinghua University</span><span class="slot-topic">Humanoid Loco-manipulation</span></span></a></td>
         </tr>
         <tr>
           <td>09:15–09:50</td>
-          <td><a class="slot slot-link" href="https://natanaso.github.io/"><img class="slot-photo" src="./static/images/people/nikolay.jpg" alt="" loading="lazy" data-initials="NA"><span><span class="slot-main">Nikolay Atanasov</span><span class="slot-sub">UC San Diego</span></span> <span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">3D Mult-Modal Mapping for Navigation and Manipulation</span></a></td>
+          <td><a class="slot slot-link" href="https://natanaso.github.io/"><img class="slot-photo" src="./static/images/people/nikolay.jpg" alt="" loading="lazy" data-initials="NA"><span><span class="slot-main">Nikolay Atanasov</span><span class="slot-sub">UC San Diego</span><span class="slot-topic">3D Multi-Modal Mapping for Navigation and Manipulation</span></span></a></td>
         </tr>
         <tr>
           <td>09:50–10:10</td>
@@ -363,7 +375,7 @@
         </tr>
         <tr>
           <td>11:25–12:00</td>
-          <td><a class="slot slot-link" href="https://lucacarlone.mit.edu/"><img class="slot-photo" src="./static/images/people/luca.png" alt="" loading="lazy" data-initials="NA"><span><span class="slot-main">Luca Carlone</span><span class="slot-sub">MIT</span></span> <span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">Spatial AI and Long-term Memory for Generalist Robots</span></a></td>
+          <td><a class="slot slot-link" href="https://lucacarlone.mit.edu/"><img class="slot-photo" src="./static/images/people/luca.jpg" alt="" loading="lazy" data-initials="LC"><span><span class="slot-main">Luca Carlone</span><span class="slot-sub">MIT</span><span class="slot-topic">Spatial AI and Long-term Memory for Generalist Robots</span></span></a></td>
         </tr>
         <tr class="is-feature">
           <td>12:00–12:30</td>
@@ -375,11 +387,11 @@
         </tr>
         <tr>
           <td>14:00–14:35</td>
-          <td><a class="slot slot-link" href="https://lauramsmith.github.io/"><img class="slot-photo" src="./static/images/people/laura.jpg" alt="" loading="lazy" data-initials="LS"><span><span class="slot-main">Laura Smith</span><span class="slot-sub">Physical Intelligence</span></span>  <span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">Vision-Language Action (VLA) for Open-World Generalization</span> </a></td>
+          <td><a class="slot slot-link" href="https://lauramsmith.github.io/"><img class="slot-photo" src="./static/images/people/laura.jpg" alt="" loading="lazy" data-initials="LS"><span><span class="slot-main">Laura Smith</span><span class="slot-sub">Physical Intelligence</span><span class="slot-topic">Vision-Language Action (VLA) for Open-World Generalization</span></span></a></td>
         </tr>
         <tr>
           <td>14:35–15:10</td>
-          <td><a class="slot slot-link" href="https://contactrika.github.io/"><img class="slot-photo" src="./static/images/people/rika.jpg" alt="" loading="lazy" data-initials="RA"><span><span class="slot-main">Rika Antonova</span><span class="slot-sub">University of Cambridge</span></span> <span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">Scaling up Mobility with Whole-Body Control and Agentic Learning</span> </a></td>
+          <td><a class="slot slot-link" href="https://contactrika.github.io/"><img class="slot-photo" src="./static/images/people/rika.jpg" alt="" loading="lazy" data-initials="RA"><span><span class="slot-main">Rika Antonova</span><span class="slot-sub">University of Cambridge</span><span class="slot-topic">Scaling up Mobility with Whole-Body Control and Agentic Learning</span></span></a></td>
         </tr>
         <tr>
           <td>15:10–15:30</td>
@@ -391,11 +403,11 @@
         </tr>
         <tr>
           <td>16:10–16:45</td>
-          <td><a class="slot slot-link" href="https://shurans.github.io/"><img class="slot-photo" src="./static/images/people/shuran.jpg" alt="" loading="lazy" data-initials="SS"><span><span class="slot-main">Shuran Song</span><span class="slot-sub">Stanford University</span></span> <span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">Learning Mobile Manipulation from Human Demonstrations </span> </a></td>
+          <td><a class="slot slot-link" href="https://shurans.github.io/"><img class="slot-photo" src="./static/images/people/shuran.jpg" alt="" loading="lazy" data-initials="SS"><span><span class="slot-main">Shuran Song</span><span class="slot-sub">Stanford University</span><span class="slot-topic">Learning Mobile Manipulation from Human Demonstrations</span></span></a></td>
         </tr>
         <tr>
           <td>16:45–17:00</td>
-          <td><span class="slot"><span class="slot-spacer"></span><span class="slot-main">Sponsor talk</span><span class="slot-sub">Unitree</span><span style="font-size:12px; background:#e6f1fb; color:#185fa5; padding:2px 7px; border-radius:4px; font-weight:500;">Towards General Humanoid Intelligence</span></span></td>
+          <td><span class="slot"><span class="slot-spacer"></span><span><span class="slot-main">Sponsor talk</span><span class="slot-sub">Unitree</span><span class="slot-topic">Towards General Humanoid Intelligence</span></span></span></td>
         </tr>
         <tr class="is-feature">
           <td>17:00–17:45</td>
@@ -413,7 +425,7 @@
     <h2 class="section-title">Panel and debate</h2>
     <div class="discussions">
       <div class="discussion">
-        <p class="discussion-time">11:45–12:30</p>
+        <p class="discussion-time">12:00–12:30</p>
         <h3>Panel</h3>
         <p>connecting spatial understanding and physical interaction</p>
       </div>
@@ -437,14 +449,14 @@
     <ul class="people people-organizers">
       <li><a class="person" href="https://yjy0625.github.io">
         <img class="person-photo" src="./static/images/people/jingyun.jpg" alt="" width="350" height="350" loading="lazy" data-initials="JY">
-        <span class="person-name" style="margin-bottom:4px;">Jingyun Yang</span>
-        <span style="font-size:11px; background:#e6f1fb; color:#185fa5; padding:2px 6px; border-radius:4px; font-weight:500; display:inline-block;">Co-Lead</span>
+        <span class="person-name">Jingyun Yang</span>
+        <span class="person-role">Co-lead</span>
         <span class="person-aff">Stanford University</span>
       </a></li>
       <li><a class="person" href="https://seungchan-kim.github.io/">
         <img class="person-photo" src="./static/images/people/seungchan.jpg" alt="" width="400" height="400" loading="lazy" data-initials="SK">
-        <span class="person-name" style="margin-bottom:4px;">Seungchan Kim</span>
-        <span style="font-size:11px; background:#e6f1fb; color:#185fa5; padding:2px 6px; border-radius:4px; font-weight:500; display:inline-block;">Co-Lead</span>
+        <span class="person-name">Seungchan Kim</span>
+        <span class="person-role">Co-lead</span>
         <span class="person-aff">Carnegie Mellon University</span>
       </a></li>
       <li><a class="person" href="https://www.dianwang.io/">
