@@ -146,6 +146,10 @@
     .section-title { margin: 0 0 1.5rem; font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.25rem); font-weight: 650; font-stretch: 108%; line-height: 1.15; letter-spacing: -0.01em; }
     .prose p { margin: 0 0 1rem; text-wrap: pretty; }
     .prose > :last-child { margin-bottom: 0; }
+    .topics { margin: 0 0 1rem; padding-left: 1.25rem; }
+    .topics li { margin-bottom: 0.6rem; text-wrap: pretty; }
+    .topics li::marker { color: var(--amber); }
+    .topics strong { font-weight: 650; }
 
     /* People */
     .people { display: grid; gap: 2rem 1.25rem; margin: 0; padding: 0; list-style: none; }
@@ -285,16 +289,23 @@
   <section class="section" id="about">
     <h2 class="section-title">Overview</h2>
     <div class="prose">
-      <p>For a robot to be truly general, it must be able to manipulate more than an arm’s length away. Prior research has approached this goal from two directions: navigation and SLAM researchers build systems with spatial understanding capabilities that enable robots to move through large environments, while manipulation researchers develop robot policies, skills, and controllers for contact-rich interactions. Mobile manipulation sits at their intersection, but existing approaches still often treat navigation and manipulation as separate components instead of integrating them into a unified system.</p>
-      <p>Recent advances in spatial perception, robot foundation models, scalable data collection, whole-body control, as well as increasingly accessible wheeled and legged platforms make it possible to study these capabilities together on meaningful real-world tasks. As robots move beyond tabletop settings, they must jointly decide where to move, what to observe, and how to interact over long horizons.</p>
-      <p>In this workshop, we bring together researchers in hardware, spatial AI, control, planning, and robot learning to answer the following questions:</p>
-      <p>The workshop brings these questions together around complete mobile manipulation systems, connecting communities that often meet separately. ICRA’s breadth makes it particularly suited to this discussion. Expected outcomes include shared evaluation priorities, new collaborations, and research directions for robots that can seamlessly perceive, move, and interact. The workshop aligns most closely with the RAS TCs on Mobile Manipulation, Robot Learning, and Computer &amp; Robot Vision.</p>
+      <p>For a robot to be truly general, it must be able to manipulate more than an arm’s length away, yet building such a capability requires bridging two communities that have largely developed in parallel: navigation and SLAM researchers, who build systems with spatial understanding capabilities that enable robots to move through large environments, and manipulation researchers, who develop robot policies, skills, and controllers for contact-rich interactions. Mobile manipulation sits at their intersection, but existing approaches still often treat navigation and manipulation as separate components instead of integrating them into a unified system. As robots move beyond tabletop settings, they must jointly decide where to move, what to observe, what to remember, and how to interact over long horizons.</p>
+      <p>The timing is right to bring these directions together. Both communities have independently undergone a foundation-model revolution: vision-language-action models have transformed generalizable skill learning, while neural scene representations and geometric foundation models have matured spatial perception and mapping. Industry investment in humanoid robots is making navigation and manipulation inseparable, and mobile manipulation benchmarks have only recently reached the scale needed to ground cross-community discussion in concrete, reproducible tasks.</p>
+      <p>In this workshop, we bring together researchers in hardware, spatial AI, control, planning, and robot learning to discuss the future and challenges of mobile manipulation, centered on complete systems that connect communities that often meet separately. We expect the workshop to foster new collaborations, uncover methods that combine spatial reasoning and manipulation approaches typically studied in separate communities, and initiate new research directions that help robots seamlessly perceive, move, and interact in challenging tasks and environments.</p>
     </div>
   </section>
 
   <section class="section" id="discussion-topics">
     <h2 class="section-title">Discussion Topics</h2>
-    <p class="placeholder">TBD</p>
+    <div class="prose">
+      <p>The workshop is organized around the following questions:</p>
+      <ul class="topics">
+        <li><strong>Spatial understanding:</strong> How should robots represent, actively observe, and remember changing environments to support both global reasoning and local interaction?</li>
+        <li><strong>Whole-body manipulation:</strong> How can control and learning enable precise, coordinated interaction, generalizable skills, and recovery over long horizons?</li>
+        <li><strong>Connecting reasoning and action:</strong> Which capabilities should be learned jointly, and which should remain modular? What role should LLMs and agentic frameworks play in connecting spatial reasoning with physical skills?</li>
+        <li><strong>Enabling reliable systems:</strong> What robot designs, data collection methods, and evaluation practices support reliable deployment across platforms and safe interaction with people?</li>
+      </ul>
+    </div>
   </section>
 
   <!--
